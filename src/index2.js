@@ -16,55 +16,41 @@ let photosCollection = new PhotosCollection(20, refGallery);
 let form = new Form(refForm, refInput, refSubmitButton);
 
 form.createListenerForInput();
-form.createListenerForSubmit(getPhotos);
+form.createListenerForSubmit(fetchForPhotos);
 
-async function getPhotos(input) {
-  let response;
-  try {
-    response = await fetchForPhotos(input);
-  } catch (error) {
-    console.log(error);
-    if (error?.response?.status === 400) {
-      Notiflix.Notify.failure(
-        `We're sorry, but you've reached the end of search results.`
-      );
-      console.log(error.message);
-    }
-    return;
-  }
-  const photosList = await getPhotosList(response);
-  await createHTMLPhotosCollection(photosList);
-}
-
-async function fetchForPhotos(input) {
+function fetchForPhotos(input) {
   setTimeout(() => (refSubmitButton.disabled = true), 1000);
   photosCollection.inputChecking(input);
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      // Authorization: '????????????'
-    },
-    params: {
-      key: '33881811-455663e333f2bc5dbb769e41c',
-      q: `${input}`,
-      image_type: 'photo',
-      orientation: 'horizontal',
-      safesearch: 'true',
-      per_page: `${photosCollection.photosNumber}`,
-      page: `${photosCollection.page}`,
-      // page: `27`,
-    },
-  };
-  return axios.get(`https://pixabay.com/api/`, config);
+
+  axios
+    .get(
+      `https://pixabay.com/api/?key=33881811-455663e333f2bc5dbb769e41c&q=${input}&image_type=photo&orientation=horizontal&safesearch=true&per_page=${photosCollection.photosNumber}&page=${photosCollection.page}`
+    )
+    .then(getPhotosList)
+    .then(createHTMLPhotosCollection)
+    .catch(error => {
+      if (error?.response?.status === 400) {
+        Notiflix.Notify.failure(
+          `We're sorry, but you've reached the end of search results.`
+        );
+      }
+      console.log(error);
+    });
 }
 
-async function getPhotosList(response) {
-  console.log(response);
-  if (response.data.totalHits === 0) {
+function getPhotosList(response) {
+  if (response?.response?.status === 400) {
+    Notiflix.Notify.failure(
+      `We're sorry, but you've reached the end of search results.`
+    );
+    throw new Error();
+  } else if (response.status != 200) {
+    throw new Error();
+  } else if (response.data.totalHits === 0) {
     Notiflix.Notify.failure(
       `We're sorry, but there are not photos according to your query`
     );
-    throw new Error((message = `there are not photos according to query`));
+    throw new Error();
   }
   Notiflix.Notify.success(
     `Hooray! We found ${response.data.totalHits} images.`
@@ -72,7 +58,7 @@ async function getPhotosList(response) {
   return response.data.hits;
 }
 
-async function createHTMLPhotosCollection(photosList) {
+function createHTMLPhotosCollection(photosList) {
   let renderedPhotosList = photosCollection.photosRenderingLightBox(photosList);
   refGallery.insertAdjacentHTML('beforeend', renderedPhotosList);
   //================
@@ -86,10 +72,11 @@ async function createHTMLPhotosCollection(photosList) {
   refSubmitButton.disabled = false;
   form.smoothScroll();
   if (!photosCollection.intersectionObserver) {
+    // intersectionObserver = photosCollection.createElementForInfiniteScroll();
     photosCollection.createElementForInfiniteScroll();
     createInfiniteScroll();
-    console.log(photosCollection.intersectionObserver);
   }
+  return response.data.hits;
 }
 
 function createInfiniteScroll() {
@@ -103,7 +90,7 @@ function createInfiniteScroll() {
   function observeFunction(entries) {
     entries.forEach(entry => {
       if (entry.isIntersecting && photosCollection.inputValue != null) {
-        getPhotos(refInput.value.trim());
+        fetchForPhotos(refInput.value.trim());
       }
     });
   }

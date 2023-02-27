@@ -16,27 +16,9 @@ let photosCollection = new PhotosCollection(20, refGallery);
 let form = new Form(refForm, refInput, refSubmitButton);
 
 form.createListenerForInput();
-form.createListenerForSubmit(getPhotos);
+form.createListenerForSubmit(fetchForPhotos);
 
-async function getPhotos(input) {
-  let response;
-  try {
-    response = await fetchForPhotos(input);
-  } catch (error) {
-    console.log(error);
-    if (error?.response?.status === 400) {
-      Notiflix.Notify.failure(
-        `We're sorry, but you've reached the end of search results.`
-      );
-      console.log(error.message);
-    }
-    return;
-  }
-  const photosList = await getPhotosList(response);
-  await createHTMLPhotosCollection(photosList);
-}
-
-async function fetchForPhotos(input) {
+function fetchForPhotos(input) {
   setTimeout(() => (refSubmitButton.disabled = true), 1000);
   photosCollection.inputChecking(input);
   const config = {
@@ -52,14 +34,24 @@ async function fetchForPhotos(input) {
       safesearch: 'true',
       per_page: `${photosCollection.photosNumber}`,
       page: `${photosCollection.page}`,
-      // page: `27`,
     },
   };
-  return axios.get(`https://pixabay.com/api/`, config);
+  axios
+    .get(`https://pixabay.com/api/`, config)
+    .then(getPhotosList)
+    .then(createHTMLPhotosCollection)
+    .catch(error => {
+      console.log(error);
+      if (error?.response?.status === 400) {
+        Notiflix.Notify.failure(
+          `We're sorry, but you've reached the end of search results.`
+        );
+      }
+      console.log(error.message);
+    });
 }
 
-async function getPhotosList(response) {
-  console.log(response);
+function getPhotosList(response) {
   if (response.data.totalHits === 0) {
     Notiflix.Notify.failure(
       `We're sorry, but there are not photos according to your query`
@@ -72,7 +64,7 @@ async function getPhotosList(response) {
   return response.data.hits;
 }
 
-async function createHTMLPhotosCollection(photosList) {
+function createHTMLPhotosCollection(photosList) {
   let renderedPhotosList = photosCollection.photosRenderingLightBox(photosList);
   refGallery.insertAdjacentHTML('beforeend', renderedPhotosList);
   //================
@@ -88,8 +80,8 @@ async function createHTMLPhotosCollection(photosList) {
   if (!photosCollection.intersectionObserver) {
     photosCollection.createElementForInfiniteScroll();
     createInfiniteScroll();
-    console.log(photosCollection.intersectionObserver);
   }
+  return response.data.hits;
 }
 
 function createInfiniteScroll() {
@@ -103,7 +95,7 @@ function createInfiniteScroll() {
   function observeFunction(entries) {
     entries.forEach(entry => {
       if (entry.isIntersecting && photosCollection.inputValue != null) {
-        getPhotos(refInput.value.trim());
+        fetchForPhotos(refInput.value.trim());
       }
     });
   }
