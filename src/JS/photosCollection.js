@@ -1,7 +1,9 @@
 class PhotosCollection {
-  constructor(photosNumber, refGallery) {
+  constructor(photosNumber, refGallery, refSubmitButton) {
     this.refGallery = refGallery;
+    this.refSubmitButton = refSubmitButton;
     this.photosNumber = photosNumber;
+    this.totalHits = null;
     this.page = 1;
     this.inputValue = null;
     this.elementForInfiniteScroll = null;
@@ -20,15 +22,34 @@ class PhotosCollection {
         this.intersectionObserver.disconnect();
         this.intersectionObserver = null;
         this.elementForInfiniteScroll.innerHTML = '';
+        this.refSubmitButton.disabled = true;
       }
     }
     this.inputValue = input;
+    return this.restOfPhotoListChecking();
+  }
+
+  restOfPhotoListChecking() {
+    const photosNumberLoaded = (this.page - 1) * this.photosNumber;
+    if (
+      (photosNumberLoaded >= this.totalHits ||
+        this.totalHits < this.photosNumber) &&
+      this.intersectionObserver
+    ) {
+      this.intersectionObserver.disconnect();
+      this.intersectionObserver = null;
+      this.elementForInfiniteScroll.innerHTML = '';
+      this.refSubmitButton.disabled = true;
+      return true;
+    } else {
+      return false;
+    }
   }
   photosRenderingLightBox(photosList) {
     let renderList = photosList.reduce((accum, photo) => {
       return (
         accum +
-        `<div class='photo-thumb'><div class='photo-card'><a href="${photo.largeImageURL}" ><img src="${photo.webformatURL}" alt="${photo.tags}" title="" loading="lazy" width=300 height=200/></a></div>
+        `<div class='photo-thumb'><div class='photo-card'><a href="${photo.largeImageURL}" ><img src="${photo.webformatURL}" alt="${photo.tags}" title="" width=300 height=200/></a></div>
 
           <div class="info">
             <p class="info-item">

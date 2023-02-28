@@ -15,11 +15,11 @@ class Form {
       this.submitButton.disabled = true;
     }
   }
-  createListenerForSubmit(fetchForPhotos) {
+  createListenerForSubmit(getPhotos) {
     this.formField.addEventListener('submit', event => {
       event.preventDefault();
       const inputValue = this.inputField.value.trim();
-      fetchForPhotos(inputValue);
+      getPhotos(inputValue);
     });
   }
   // submitFormOn(event) {
