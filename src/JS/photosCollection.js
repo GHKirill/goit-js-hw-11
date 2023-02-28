@@ -22,7 +22,7 @@ class PhotosCollection {
         this.intersectionObserver.disconnect();
         this.intersectionObserver = null;
         this.elementForInfiniteScroll.innerHTML = '';
-        this.refSubmitButton.disabled = true;
+        //this.refSubmitButton.disabled = true;
       }
     }
     this.inputValue = input;
@@ -39,7 +39,7 @@ class PhotosCollection {
       this.intersectionObserver.disconnect();
       this.intersectionObserver = null;
       this.elementForInfiniteScroll.innerHTML = '';
-      this.refSubmitButton.disabled = true;
+      //this.refSubmitButton.disabled = true;
       return true;
     } else {
       return false;

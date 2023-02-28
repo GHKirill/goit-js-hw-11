@@ -11,7 +11,8 @@ import {
 } from '../index';
 
 async function fetchForPhotos(input) {
-  setTimeout(() => (refSubmitButton.disabled = true), 1000);
+  //setTimeout(() => (refSubmitButton.disabled = true), 1000);
+  //refSubmitButton.disabled = true;
   photosCollection.inputChecking(input);
 
   const config = {
@@ -40,11 +41,13 @@ async function getPhotosList(response) {
     Notiflix.Notify.failure(
       `We're sorry, but there are not photos according to your query`
     );
+    refSubmitButton.disabled = true;
     throw new Error();
   }
   Notiflix.Notify.success(
     `Hooray! We found ${response.data.totalHits} images.`
   );
+  refSubmitButton.disabled = false;
   return response.data.hits;
 }
 async function createHTMLPhotosCollection(photosList) {
@@ -57,7 +60,7 @@ async function createHTMLPhotosCollection(photosList) {
     photosCollection.createLightBox();
   }
   //===============
-  setTimeout(() => (refSubmitButton.disabled = false), 2000);
+  //setTimeout(() => (refSubmitButton.disabled = false), 2000);
   //refSubmitButton.disabled = false;
   form.smoothScroll();
   //check if intersectionObserver is photos number is not loaded
@@ -75,7 +78,8 @@ async function createHTMLPhotosCollection(photosList) {
     Notiflix.Notify.failure(
       `We're sorry, but you've reached the end of search results.`
     );
-    setTimeout(() => (refSubmitButton.disabled = true), 2000);
+    //setTimeout(() => (refSubmitButton.disabled = true), 2000);
+    refSubmitButton.disabled = true;
     return;
   }
 }
