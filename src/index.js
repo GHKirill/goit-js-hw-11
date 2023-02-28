@@ -32,20 +32,14 @@ async function getPhotos(input) {
     return;
   }
   let response;
-  try {
-    response = await fetchForPhotos(input);
-  } catch (error) {
-    console.log(error);
-    return;
-  }
   let photosList;
   try {
+    response = await fetchForPhotos(input);
     photosList = await getPhotosList(response);
   } catch (error) {
     console.log(error);
     return;
   }
-
   await createHTMLPhotosCollection(photosList);
 }
 

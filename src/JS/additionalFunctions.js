@@ -89,7 +89,11 @@ function createInfiniteScroll() {
 
   function observeFunction(entries) {
     entries.forEach(entry => {
-      if (entry.isIntersecting && photosCollection.inputValue != null) {
+      if (
+        entry.isIntersecting &&
+        photosCollection.inputValue != null &&
+        photosCollection.intersectionObserver
+      ) {
         getPhotos(refInput.value.trim());
       }
     });
