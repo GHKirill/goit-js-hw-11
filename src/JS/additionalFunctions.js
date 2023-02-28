@@ -58,7 +58,7 @@ async function createHTMLPhotosCollection(photosList) {
   }
   //===============
   setTimeout(() => (refSubmitButton.disabled = false), 2000);
-  refSubmitButton.disabled = false;
+  //refSubmitButton.disabled = false;
   form.smoothScroll();
   //check if intersectionObserver is photos number is not loaded
   if (
@@ -71,12 +71,13 @@ async function createHTMLPhotosCollection(photosList) {
     createInfiniteScroll();
     //console.log(photosCollection.intersectionObserver);
     return;
-  }
-  if (photosCollection.totalHits <= photosCollection.photosNumber) {
+  } else if (photosCollection.totalHits <= photosCollection.photosNumber) {
     Notiflix.Notify.failure(
       `We're sorry, but you've reached the end of search results.`
     );
-    refSubmitButton.disabled = true;
+    console.log('test');
+    //refSubmitButton.disabled = true;
+    setTimeout(() => (refSubmitButton.disabled = true), 2000);
     return;
   }
 }
