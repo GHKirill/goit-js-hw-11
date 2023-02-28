@@ -75,8 +75,6 @@ async function createHTMLPhotosCollection(photosList) {
     Notiflix.Notify.failure(
       `We're sorry, but you've reached the end of search results.`
     );
-    console.log('test');
-    //refSubmitButton.disabled = true;
     setTimeout(() => (refSubmitButton.disabled = true), 2000);
     return;
   }
