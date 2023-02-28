@@ -76,6 +76,7 @@ async function createHTMLPhotosCollection(photosList) {
     Notiflix.Notify.failure(
       `We're sorry, but you've reached the end of search results.`
     );
+    refSubmitButton.disabled = true;
     return;
   }
 }
