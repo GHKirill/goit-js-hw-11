@@ -62,7 +62,10 @@ async function createHTMLPhotosCollection(photosList) {
   //===============
   //setTimeout(() => (refSubmitButton.disabled = false), 2000);
   //refSubmitButton.disabled = false;
-  form.smoothScroll();
+  if(photosCollection.intersectionObserver) {
+    form.smoothScroll();
+  }
+  
   //check if intersectionObserver is photos number is not loaded
   if (
     !photosCollection.intersectionObserver &&
